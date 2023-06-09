@@ -1,16 +1,19 @@
-const express = require("express");
-const cors = require("cors");
-const { MongoClient, ServerApiVersion } = require('mongodb');
-require('dotenv').config()
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
-// midlwares
+// middleware
 app.use(cors());
 app.use(express.json());
 
-// ---------------------------
-// const uri = "mongodb+srv://docUser:Efrqfr3qxayqLL9A@cluster0.y1sglpm.mongodb.net/?retryWrites=true&w=majority";
+console.log(process.env.DB_USER);
+console.log(process.env.DB_PASS);
+
+
+// const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.y1sglpm.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri)
 
@@ -28,22 +31,32 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
-    app.post("/toy," async(req, res=>{
-      const addToy = req.body;
-      console.log(newCoffee);
-    }))
+    const toyCollection = client.db('toyDB').collection('toy');
 
+    app.get('/toy', async (req, res) => {
+      const cursor = toyCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+  })
+
+    app.post('/toy', async (req, res) => {
+      const newToy = req.body;
+      console.log(newToy);
+      const result = await toyCollection.insertOne(newToy);
+      res.send(result);
+      
+  })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
   } finally {
     // Ensures that the client will close when you finish/error
-    await client.close();
+    // await client.close();
   }
 }
 run().catch(console.dir);
-// ------------------------------
+
 
 
 app.get("/", (req, res) => {
