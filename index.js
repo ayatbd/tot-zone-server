@@ -9,9 +9,6 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-console.log(process.env.DB_USER);
-console.log(process.env.DB_PASS);
-
 // const { MongoClient, ServerApiVersion } = require('mongodb');
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.y1sglpm.mongodb.net/?retryWrites=true&w=majority`;
 console.log(uri);
@@ -39,6 +36,13 @@ async function run() {
     });
 
     // my classes______________
+    app.get("/toy/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await toyCollection.findOne(query);
+      res.send(result);
+    });
+
     app.get("/toy", async (req, res) => {
       // console.log(req.query);
       let query = {};
