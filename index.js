@@ -24,9 +24,6 @@ const client = new MongoClient(uri, {
 
 async function run() {
   try {
-    // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
-
     const toyCollection = client.db("toyDB").collection("toy");
 
     app.get("/toy", async (req, res) => {
@@ -35,7 +32,6 @@ async function run() {
       res.send(result);
     });
 
-    // my classes______________
     app.get("/toy/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
@@ -88,9 +84,6 @@ async function run() {
       const result = await toyCollection.updateOne(filter, toy, options);
       res.send(result);
     });
-
-    // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
     console.log(
       "Pinged your deployment. You successfully connected to MongoDB!"
     );
